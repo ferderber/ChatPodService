@@ -1,6 +1,10 @@
 const WebSocket = require('ws');
+const User = require('./User');
+const handleMessage = require('./MessageHandler');
 
 const wss = new WebSocket.Server({port: 8080});
+const users = new Map();
+let numConnections = 0;
 
 wss.broadcast = function (data) {
   wss
@@ -12,15 +16,27 @@ wss.broadcast = function (data) {
     });
 }
 
-wss.on('connection', function connection(ws) {
-  ws
-    .on('message', function incoming(message) {
-      wss
-        .clients
-        .forEach((client) => {
-          if (client !== ws && client.readyState === WebSocket.OPEN) {
-            client.send(message);
-          }
-        });
-    });
-});
+function getUser(ws) {
+  let user;
+  if (ws.id) {
+    user = users.get(ws.id);
+  } else {
+    ws.id = numConnections++;
+    user = new User(ws);
+    users.set(ws.id, user);
+  }
+  return user;
+}
+
+wss
+  .on('connection', function connection(ws) {
+    ws
+      .on('message', function incoming(message) {
+        let user = getUser(ws);
+        handleMessage(message, user, wss);
+      });
+    ws.on('close', (code, reason) => {
+      users.delete(ws.id);
+      console.log("closed connection with" + ws.id);
+    })
+  });
