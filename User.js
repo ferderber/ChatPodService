@@ -7,6 +7,7 @@ class User {
     this._name = name
       ? name
       : utils.nameRandomizer();
+    this._url = null;
   }
 
   get client() {
@@ -17,6 +18,15 @@ class User {
   }
   get id() {
     return this._id;
+  }
+  get url() {
+    return this._url;
+  }
+  setUrl(url) {
+    this._url = url;
+  }
+  setName(name) {
+    this._name = name;
   }
 }
 
