@@ -1,0 +1,6 @@
+module.exports = {
+  CONNECTED: 'CONNECTED',
+  MESSAGE: 'MESSAGE',
+  SET_URL: 'SET_URL',
+  SET_NAME: 'SET_NAME'
+};
