@@ -20,7 +20,7 @@ module.exports = function handleMessage(message, user, server) {
   const url = urlUserIdMap.get(user.client.id);
   switch (msg.type) {
     case MESSAGE:
-      addMessageToMap(url, message);
+      addMessageToMap(url, msg.message);
       server
         .clients
         .forEach((client) => {
