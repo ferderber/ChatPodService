@@ -4,7 +4,7 @@ const urlUserIdMap = new Map();
 const urlMessageMap = new Map();
 
 function formatMessageResponse(message, user) {
-  return JSON.stringify({
+  return {
     message,
     user: {
       id: user.client.id,
@@ -12,7 +12,7 @@ function formatMessageResponse(message, user) {
     },
     type: MESSAGE,
     send_date: new Date()
-  });
+  };
 }
 
 module.exports = function handleMessage(message, user, server) {
@@ -20,12 +20,13 @@ module.exports = function handleMessage(message, user, server) {
   const url = urlUserIdMap.get(user.client.id);
   switch (msg.type) {
     case MESSAGE:
-      addMessageToMap(url, msg.message);
+      const formattedMessage = formatMessageResponse(msg.message, user);
+      addMessageToMap(url, formattedMessage);
       server
         .clients
         .forEach((client) => {
           if (client !== user.client && client.url === url && client.readyState === WebSocket.OPEN) {
-            client.send(formatMessageResponse(msg.message, user));
+            client.send(JSON.stringify(formattedMessage));
           }
         });
       break;
