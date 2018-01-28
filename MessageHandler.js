@@ -49,7 +49,7 @@ function addMessageToMap(url, message) {
   } else {
     messages = [message];
   }
-  urlMessageMap.set(url, message);
+  urlMessageMap.set(url, messages);
 }
 
 function handleCommand(message, user, server) {
