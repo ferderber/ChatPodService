@@ -1,9 +1,9 @@
 const WebSocket = require('ws');
 const User = require('./User');
 const handleMessage = require('./MessageHandler');
-
 const wss = new WebSocket.Server({port: 8080});
 const users = new Map();
+const {CONNECTED} = require('./actions');
 let numConnections = 0;
 
 wss.broadcast = function (data) {
@@ -31,13 +31,16 @@ function getUser(ws) {
 
 wss
   .on('connection', function connection(ws) {
-    ws
-      .on('message', function incoming(message) {
-        let user = getUser(ws);
-        handleMessage(message, user, wss);
-      });
+    let user = getUser(ws);
+    ws.send(JSON.stringify({type: CONNECTED, id: user.client.id}));
+    ws.on('message', function incoming(message) {
+      let user = getUser(ws);
+      console.log(user);
+      handleMessage(message, user, wss);
+    });
     ws.on('close', (code, reason) => {
       users.delete(ws.id);
       console.log("closed connection " + ws.id);
-    })
+    });
+    ws.on('error', (err) => console.error(err));
   });
