@@ -35,7 +35,6 @@ wss
     ws.send(JSON.stringify({type: CONNECTED, id: user.client.id}));
     ws.on('message', function incoming(message) {
       let user = getUser(ws);
-      console.log(user);
       handleMessage(message, user, wss);
     });
     ws.on('close', (code, reason) => {
