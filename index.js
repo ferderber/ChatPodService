@@ -32,7 +32,7 @@ function getUser(ws) {
 wss
   .on('connection', function connection(ws) {
     let user = getUser(ws);
-    ws.send(JSON.stringify({type: CONNECTED, id: user.client.id}));
+    ws.send(JSON.stringify({type: CONNECTED, id: user.client.id, name: user.name}));
     ws.on('message', function incoming(message) {
       let user = getUser(ws);
       handleMessage(message, user, wss);
