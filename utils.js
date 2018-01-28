@@ -1,4 +1,10 @@
+const preNames = ['ConU', 'Octo', 'Bad', 'Sad', 'Rad'];
+const sufNames = ['Dog', 'Hacker', 'Coder']
+
 module.exports.nameRandomizer = function () {
-  const nameParts = ['Test', 'Name', 'User'];
-  return Math.round((Math.random() * 2));
+  return getRandomString(preNames) + getRandomString(sufNames);
+}
+
+function getRandomString(arr) {
+  return arr[Math.round((Math.random() * (arr.length - 1)))];
 }
