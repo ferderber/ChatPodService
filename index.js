@@ -1,7 +1,7 @@
 const WebSocket = require('ws');
 const User = require('./User');
 const handleMessage = require('./MessageHandler');
-const wss = new WebSocket.Server({port: 8080});
+const wss = new WebSocket.Server({port: 8899});
 const users = new Map();
 const {CONNECTED} = require('./actions');
 let numConnections = 0;
