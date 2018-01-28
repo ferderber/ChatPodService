@@ -1,6 +1,7 @@
-const {CONNECTED, MESSAGE, SET_URL, SET_NAME} = require('./actions');
+const {CONNECTED, MESSAGE, SET_URL, SET_NAME, GET_MESSAGES} = require('./actions');
 const WebSocket = require('ws');
 const urlUserIdMap = new Map();
+const urlMessageMap = new Map();
 
 function formatMessageResponse(message, user) {
   return JSON.stringify({
@@ -15,22 +16,37 @@ function formatMessageResponse(message, user) {
 }
 
 module.exports = function handleMessage(message, user, server) {
-  const msg = JSON.parse(message);
+  const msg = JSON.parse(message)
   const url = urlUserIdMap.get(user.client.id);
   switch (msg.type) {
     case MESSAGE:
+      addMessageToMap(url, message);
       server
         .clients
         .forEach((client) => {
           if (client !== user.client && client.url === url && client.readyState === WebSocket.OPEN) {
-            client.send(formatMessageResponse(msg, user));
+            client.send(formatMessageResponse(msg.message, user));
           }
         });
+      break;
+    case GET_MESSAGES:
+      user
+        .client
+        .send();
       break;
     default:
       handleCommand(msg, user, server);
       break;
   }
+}
+function addMessageToMap(url, message) {
+  let messages = urlMessageMap.get(url);
+  if (messages instanceof Array) {
+    messages.push(message);
+  } else {
+    messages = [message];
+  }
+  urlMessageMap.set(url, message);
 }
 
 function handleCommand(message, user, server) {
@@ -39,8 +55,10 @@ function handleCommand(message, user, server) {
       user.client.url = message.url;
       user.setUrl(message.url);
       addUserToUrlMap(user);
+      break;
     case SET_NAME:
       user.setName(message.name);
+      break;
   }
 }
 
@@ -49,6 +67,5 @@ function handleCommand(message, user, server) {
  * @param {User} user to add
  */
 function addUserToUrlMap(user) {
-  console.log(user.client.id + " added to " + user.url);
   urlUserIdMap.set(user.client.id, user.url);
 }
