@@ -13,7 +13,7 @@ class Message {
     return this._time;
   }
 
-  get content() {
+  get user() {
     return this._user;
   }
 }

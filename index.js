@@ -18,10 +18,11 @@ wss.broadcast = function (data) {
 
 function getUser(ws) {
   let user;
-  if (ws.id) {
+  if (ws.id !== undefined) {
     user = users.get(ws.id);
   } else {
-    ws.id = numConnections++;
+    ws.id = numConnections;
+    numConnections += 1;
     user = new User(ws);
     users.set(ws.id, user);
   }
@@ -37,6 +38,6 @@ wss
       });
     ws.on('close', (code, reason) => {
       users.delete(ws.id);
-      console.log("closed connection with" + ws.id);
+      console.log("closed connection " + ws.id);
     })
   });
