@@ -30,9 +30,12 @@ module.exports = function handleMessage(message, user, server) {
         });
       break;
     case GET_MESSAGES:
-      user
-        .client
-        .send();
+      const messages = urlMessageMap.get(url);
+      if (messages) {
+        user
+          .client
+          .send(JSON.stringify({type: GET_MESSAGES, messages}));
+      }
       break;
     default:
       handleCommand(msg, user, server);
